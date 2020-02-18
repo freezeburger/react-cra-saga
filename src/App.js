@@ -14,15 +14,23 @@ class App extends React.Component{
     console.log(this.props);
   }
   componentDidUpdate(){}
-  
+
   componentWillUnmount(){}
 
   render() {
-    return <div className="App">{this.props.defaultValue}</div>;
+    return <div className="App">{this.props.value}</div>;
   }
 
 }
 
+// this function should be named a selector as it helps the component selecting data from the state
+const mapApplicationStateToComponentProps = (state) => {
+  console.log("App State ->", state);
+  return {
+    value: state.defaultValue
+  }
+}
+
 // Connecting The App through a the react-redux Provider
-const ConnectedApp = () => <ApiProviderConnector Component={App}></ApiProviderConnector>;
+const ConnectedApp = () => <ApiProviderConnector mapper={mapApplicationStateToComponentProps} Component={App}></ApiProviderConnector>;
 export default ConnectedApp;

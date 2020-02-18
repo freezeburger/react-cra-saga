@@ -61,8 +61,8 @@ const store = createStore(apiReducer);
 
 // HOC Abstraction to provide a react-redux ContextProvider for this specific Store
 // Side Note : this a usefull way to provide a simplier wrapper
-const ApiProviderConnector = ({ Component }) => {
-  const ConnectedComponent = connect()(Component);
+const ApiProviderConnector = ({mapper, Component }) => {
+  const ConnectedComponent = connect(mapper)(Component);
   console.log(
       '%c %s',
       'color:blue',
