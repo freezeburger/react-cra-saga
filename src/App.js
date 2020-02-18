@@ -18,7 +18,7 @@ class App extends React.Component{
   componentWillUnmount(){}
 
   render() {
-    return <div className="App">{this.props.value}</div>;
+    return <div className="App">{this.props.polling && <div>Fecthing Data</div>}{this.props.time.currentFileTime}</div>;
   }
 
 }
@@ -27,7 +27,9 @@ class App extends React.Component{
 const mapApplicationStateToComponentProps = (state) => {
   console.log("App State ->", state);
   return {
-    value: state.defaultValue
+    value: state.defaultValue,
+    time:state.time,
+    polling:state.polling
   }
 }
 
