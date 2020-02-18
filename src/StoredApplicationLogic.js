@@ -69,6 +69,7 @@ const apiReducer = (state = INITIAL_STATE, action) => {
 
 // Redux will make a first call to the apiReducer;
 const store = createStore(apiReducer);
+// Store Internal Logic
 (() => {
   setInterval(
     async () => {
