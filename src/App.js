@@ -8,6 +8,7 @@ const Level3 = ({ children }) => <div>{children}</div>;
 const Level4 = ({ children }) => <div>{children}</div>;
 
 const HiJackingStoreComponent = () => {
+  // https://react-redux.js.org/using-react-redux/accessing-store
   return (
     <ReactReduxContext.Consumer>
       {({ store }) => {
