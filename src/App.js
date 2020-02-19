@@ -1,5 +1,19 @@
 import React from 'react';
 import ApiProviderConnector from './StoredApplicationLogic';
+import { ReactReduxContext } from 'react-redux';
+
+const HiJackingStoreComponent = () => {
+  return (
+    <ReactReduxContext.Consumer>
+      {({ store }) => {
+        return (
+          <fieldset>
+          {store.getState().time.currentFileTime}
+          </fieldset>
+        )}}
+    </ReactReduxContext.Consumer>
+  );
+}
 
 class App extends React.Component{
 
@@ -18,7 +32,7 @@ class App extends React.Component{
   componentWillUnmount(){}
 
   render() {
-    return <div className="App">{this.props.polling && <div>Fecthing Data</div>}{this.props.time.currentFileTime}</div>;
+    return <div className="App">{this.props.polling && <div>Fecthing Data</div>}{this.props.time.currentFileTime}<HiJackingStoreComponent/></div>;
   }
 
 }

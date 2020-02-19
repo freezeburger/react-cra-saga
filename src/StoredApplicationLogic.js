@@ -64,7 +64,7 @@ const apiReducer = (state = INITIAL_STATE, action) => {
         return state;
   }
 
-  return state;
+  //return state;
 };
 
 // Redux will make a first call to the apiReducer;
