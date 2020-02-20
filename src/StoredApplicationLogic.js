@@ -1,11 +1,10 @@
-
 import React from 'react';
-import { createStore } from 'redux';
-import { Provider , ReactReduxContext} from 'react-redux';
-import { connect } from 'react-redux';
+import { createStore, applyMiddleware, compose } from 'redux';
+import { Provider, ReactReduxContext, connect } from 'react-redux';
+import { timeSagaMiddleware, timeSagaRun } from './StoreApplicationSaga';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 // const API = 'https://www.reddit.com/r/reactjs/.json';
-const TIME = 'http://worldclockapi.com/api/json/utc/now';
 
 const INITIAL_STATE = {
   defaultValue: 'INITIAL_STATE',
@@ -14,20 +13,36 @@ const INITIAL_STATE = {
 
 const apiReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-      case '@@POLING_TIME_START':
-          return Object.assign({}, state, {polling:true});
-      case '@@POLING_TIME_END':
-        return Object.assign({}, state, {polling:false}, {time:action.data});
-      default:
-        return state;
+    case '@@POLING_TIME_START':
+      return Object.assign({}, state, { polling: true });
+    case '@@POLING_TIME_END':
+      return Object.assign(
+        {},
+        state,
+        { polling: false },
+        { time: action.data }
+      );
+    default:
+      return state;
   }
 };
 
-// https://github.com/zalmoxisus/redux-devtools-extension
-const store = createStore(apiReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
+// https://github.com/zalmoxisus/redux-devtools-extension
+// const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore(
+  apiReducer,
+  /* Due to Middlewares */
+  composeWithDevTools(applyMiddleware(timeSagaMiddleware))
+);
+
+timeSagaRun();
+store.dispatch({type:'INIT_SAGA_WORKERS'})
+
+// Moved To Saga
 // Store Internal Logic
-(() => {
+/* (() => {
   setInterval(
     async () => {
       store.dispatch({type:'@@POLING_TIME_START'});
@@ -36,15 +51,10 @@ const store = createStore(apiReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && win
     },
     5000
   );
-})();
+})(); */
 
-const ApiProviderConnector = ({ mapper = () => ({}) , Component }) => {
-
-  const ConnectedComponent = connect(
-    mapper,
-    null,
-    null,
-    )(Component);
+const ApiProviderConnector = ({ mapper = () => ({}), Component }) => {
+  const ConnectedComponent = connect(mapper, null, null)(Component);
 
   console.log(
     '%c %s',
@@ -56,7 +66,7 @@ through the ApiProviderConnector Context
 `
   );
   return (
-    <Provider store={store} >
+    <Provider store={store}>
       <ConnectedComponent />
     </Provider>
   );
@@ -67,43 +77,47 @@ class ApiErrorBoundary extends React.Component {
     super(props);
     this.state = { hasError: false };
   }
-  static getDerivedStateFromError({message}) {
+  static getDerivedStateFromError({ message }) {
     return { hasError: true, message };
   }
-  shouldComponentUpdate(){
+  shouldComponentUpdate() {
     return !this.state.hasError;
   }
   render() {
     if (this.state.hasError) {
       return <h1>{this.state.message}</h1>;
     }
-    return this.props.children ;
+    return this.props.children;
   }
 }
 
 // Moving on to Context
 const ProxyfiedStore = {
-  getState(){
+  getState() {
     throw Error('🚫 Prohibited access to state 🚫');
   },
-  subscribe(){},
-  dispatch(){}
+  subscribe() {},
+  dispatch() {}
 };
 
 const UnsafeContext = React.createContext();
 
-export const ApiProviderUnsafeContext = ({children :UnsafeConsumers}) => {
+export const ApiProviderUnsafeContext = ({ children: UnsafeConsumers }) => {
   console.log(
     '%c %s',
     'color:violet',
-  `
+    `
   Your belong to an Unsafe Context !!!
-  `);
+  `
+  );
   return (
     <ApiErrorBoundary>
       {/*  Switch the store in Unsafe Context */}
-      <ReactReduxContext.Provider value={{store:ProxyfiedStore}} context={UnsafeContext}>  
-          {UnsafeConsumers}
+      <ReactReduxContext.Provider
+        value={{ store: ProxyfiedStore }}
+        context={UnsafeContext}
+      >
+        {UnsafeConsumers}
       </ReactReduxContext.Provider>
     </ApiErrorBoundary>
   );
