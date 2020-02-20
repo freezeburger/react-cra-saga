@@ -13,9 +13,6 @@ const INITIAL_STATE = {
 };
 
 const apiReducer = (state = INITIAL_STATE, action) => {
-
-  console.log(action);
-
   switch (action.type) {
       case '@@POLING_TIME_START':
           return Object.assign({}, state, {polling:true});
@@ -64,28 +61,23 @@ through the ApiProviderConnector Context
   );
 };
 
-// Adding Error Boundaries
 
 class ApiErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
   }
-
   static getDerivedStateFromError(error) {
     return { hasError: true };
   }
   shouldComponentUpdate(){
     return !this.state.hasError;
   }
-
   componentDidCatch(error, errorInfo) {
     console.log(error);
     console.log( errorInfo);
   }
-
   render() {
-    console.log('rendering', {state:this.state} );
     if (this.state.hasError) {
       return <h1>🚫 Not Allowed in Unsafe Context</h1>;
     }

@@ -10,7 +10,6 @@ const Level3 = ({ children }) => <div>{children}</div>;
 const Level4 = ({ children }) => <div>{children}</div>;
 
 const HiJackingStoreComponent = () => {
-  // https://react-redux.js.org/using-react-redux/accessing-store
   return (
     <ReactReduxContext.Consumer>
       {(contextValue = {}, { store } = contextValue) => {
@@ -21,18 +20,6 @@ const HiJackingStoreComponent = () => {
 };
 
 class App extends React.Component {
-  // Explicit but not mandatory
-  constructor(props) {
-    super(props);
-  }
-
-  // http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
-  componentDidMount() {
-    console.log(this.props);
-  }
-  componentDidUpdate() {}
-
-  componentWillUnmount() {}
 
   render() {
     return (
@@ -58,7 +45,6 @@ class App extends React.Component {
   }
 }
 
-// this function should be named a selector as it helps the component selecting data from the state
 const mapApplicationStateToComponentProps = state => {
   console.log('App State ->', state);
   return {
