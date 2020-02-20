@@ -46,7 +46,6 @@ class App extends React.Component {
 }
 
 const mapApplicationStateToComponentProps = state => {
-  console.log('App State ->', state);
   return {
     value: state.defaultValue,
     time: state.time,

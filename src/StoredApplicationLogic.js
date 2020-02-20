@@ -4,7 +4,7 @@ import { createStore } from 'redux';
 import { Provider , ReactReduxContext} from 'react-redux';
 import { connect } from 'react-redux';
 
-const API = 'https://www.reddit.com/r/reactjs/.json';
+// const API = 'https://www.reddit.com/r/reactjs/.json';
 const TIME = 'http://worldclockapi.com/api/json/utc/now';
 
 const INITIAL_STATE = {
@@ -61,7 +61,6 @@ through the ApiProviderConnector Context
   );
 };
 
-
 class ApiErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -72,10 +71,6 @@ class ApiErrorBoundary extends React.Component {
   }
   shouldComponentUpdate(){
     return !this.state.hasError;
-  }
-  componentDidCatch(error, errorInfo) {
-    console.log(error);
-    console.log( errorInfo);
   }
   render() {
     if (this.state.hasError) {
