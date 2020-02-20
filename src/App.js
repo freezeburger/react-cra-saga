@@ -1,5 +1,8 @@
 import React from 'react';
-import ApiProviderConnector from './StoredApplicationLogic';
+import ApiProviderConnector, {
+  ApiProviderConnectorWhithinContext, 
+  ApiProviderUnsafeContext
+} from './StoredApplicationLogic';
 import { ReactReduxContext } from 'react-redux';
 
 const Level1 = ({ children }) => <div>{children}</div>;
@@ -11,18 +14,20 @@ const HiJackingStoreComponent = () => {
   // https://react-redux.js.org/using-react-redux/accessing-store
   return (
     <ReactReduxContext.Consumer>
-      {({ store }) => {
+      {(contextValue = {}, { store } = contextValue) => {
+        console.log( contextValue );
         return <fieldset>{store.getState().time.currentFileTime}</fieldset>;
       }}
     </ReactReduxContext.Consumer>
   );
 };
 
+const ContextualFeature = (props) => <div>{JSON.stringify(props)}</div>;
+
 class App extends React.Component {
   // Explicit but not mandatory
   constructor(props) {
     super(props);
-    console.log(props);
   }
 
   // http://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/
@@ -36,17 +41,20 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
+        {/* 
         {this.props.polling && <div>Fecthing Data</div>}
         {this.props.time.currentFileTime}
+         */}
         <Level1>
           <Level2>
             <Level3>
-              <Level4>
-                <HiJackingStoreComponent />
-              </Level4>
+              <Level4> <HiJackingStoreComponent /> </Level4>
             </Level3>
           </Level2>
         </Level1>
+        <ApiProviderUnsafeContext>
+          <HiJackingStoreComponent />
+        </ApiProviderUnsafeContext>
       </div>
     );
   }

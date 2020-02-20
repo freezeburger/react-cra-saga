@@ -1,41 +1,3 @@
-/**
- * Overall Schemas
- * 
- * 
-                    +----------------------------------------------------+                                 
-                    |                     Redux Store                    |                                 
-                    |  +----------++------------------+    +---------+   |                                 
-                    |  |          || <- Action 1      |    |         |   |                                 
-                    |  | Internal |+------------------+    |         |   |                                 
-                    |  |   Data   ||                  |    |         |   |                                 
-                    |  |          || <- Action 2      | ---| Reducer |   |                                 
-                    |  |          |+------------------+    |         |   |                                 
-                    |  |          || <- Action 3      |    |         |   |                                 
-                    |  +----------++------------------+    +---------+   |                                 
-                    |                                                    |                                                                
-                    +------------|-------------------------+---------+---+                                 
-                                |                         | Store   |             dispatch(Action):state  
-    Connection to Redux Store    |                         | Gateway | ----------  getState():state        
-    is implicily provided ---->  |                         +---------+             subscribe(listener)     
-    by react-redux               |                                                                         
-                                |                                                                         
-                    +------------|--------------------------------------+                                                                 
-                    |              React Redux Provider                 |                                 
-                    |   +-------------------------------------------+   |                                 
-                    |   |                                           |   |                                 
-                    |   |                                           |   |                                 
-                    |   |                                           |   |                                 
-                    |   |         Application Or Feature            |   |                                 
-                    |   |                                           |   |                                 
-                    |   |                                           |   |                                 
-                    |   |                                           |   |                                 
-                    |   |                                           |   |                                 
-                    |   |                                           |   |                                 
-                    |   +-------------------------------------------+   |                                 
-                    |                                                   |                                 
-                    +---------------------------------------------------+                                 
-                                                                                    
- */
 
 import React from 'react';
 import { createStore } from 'redux';
@@ -51,10 +13,9 @@ const INITIAL_STATE = {
 };
 
 const apiReducer = (state = INITIAL_STATE, action) => {
-  // console.groupCollapsed('Reducer Logs : Open to watch Initial Call');
-  // console.trace(action);
+
   console.log(action);
-  // console.groupEnd();
+
   switch (action.type) {
       case '@@POLING_TIME_START':
           return Object.assign({}, state, {polling:true});
@@ -63,12 +24,11 @@ const apiReducer = (state = INITIAL_STATE, action) => {
       default:
         return state;
   }
-
-  //return state;
 };
 
 // Redux will make a first call to the apiReducer;
 const store = createStore(apiReducer);
+
 // Store Internal Logic
 (() => {
   setInterval(
@@ -81,15 +41,14 @@ const store = createStore(apiReducer);
   );
 })();
 
-// HOC Abstraction to provide a react-redux ContextProvider for this specific Store
-// Side Note : this a usefull way to provide a simplier wrapper
-const ApiProviderConnector = ({ mapper, Component }) => {
-  //
-  // Connects accepts 4 paramters :
-  // The is a mapping function,
-  // then https://react-redux.js.org/api/connect
-  //
-  const ConnectedComponent = connect(mapper)(Component);
+const ApiProviderConnector = ({ mapper = () => ({}) , Component }) => {
+
+  const ConnectedComponent = connect(
+    mapper,
+    null,
+    null,
+    )(Component);
+
   console.log(
     '%c %s',
     'color:blue',
@@ -100,10 +59,35 @@ through the ApiProviderConnector Context
 `
   );
   return (
-    <Provider {...{ store }}>
+    <Provider store={store} >
       <ConnectedComponent />
     </Provider>
   );
 };
 
+// Moving on to Context
+
+const ProxyfiedStore = new Proxy({store}, {
+  get(targert,key){
+    return () => {
+      console.log('🚫 Prohibited access to state')
+      throw Error('🚫 Not Allowed in Unsafe Context')
+    };
+  }
+});
+const UnsafeContext = React.createContext();
+
+export const ApiProviderUnsafeContext = ({children :UnsafeConsumer}) => {
+  console.log(
+    '%c %s',
+    'color:violet',
+  `
+  Your belong to an Unsafe Context !!!
+  `);
+  return (
+    <Provider store={ProxyfiedStore} context={UnsafeContext}>
+      {UnsafeConsumer}
+    </Provider>
+  );
+};
 export default ApiProviderConnector;
