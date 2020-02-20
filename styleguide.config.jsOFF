@@ -1,0 +1,5 @@
+module.exports = {
+  components: 'src/components/**/*.{js,jsx,ts,tsx}',
+  propsParser: require('react-docgen').parse,
+  webpackConfig: require('react-scripts/config/webpack.config')
+};
