@@ -66,15 +66,15 @@ class ApiErrorBoundary extends React.Component {
     super(props);
     this.state = { hasError: false };
   }
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
+  static getDerivedStateFromError({message}) {
+    return { hasError: true, message };
   }
   shouldComponentUpdate(){
     return !this.state.hasError;
   }
   render() {
     if (this.state.hasError) {
-      return <h1>🚫 Not Allowed in Unsafe Context</h1>;
+      return <h1>{this.state.message}</h1>;
     }
     return this.props.children ;
   }
@@ -83,13 +83,14 @@ class ApiErrorBoundary extends React.Component {
 // Moving on to Context
 const ProxyfiedStore = {
   getState(){
-    console.log('🚫 Prohibited access to state');
+    throw Error('🚫 Prohibited access to state 🚫');
   },
   subscribe(){},
   dispatch(){}
 };
 
 const UnsafeContext = React.createContext();
+
 export const ApiProviderUnsafeContext = ({children :UnsafeConsumers}) => {
   console.log(
     '%c %s',
@@ -100,7 +101,7 @@ export const ApiProviderUnsafeContext = ({children :UnsafeConsumers}) => {
   return (
     <ApiErrorBoundary>
       {/*  Switch the store in Unsafe Context */}
-      <ReactReduxContext.Provider store={ProxyfiedStore} context={UnsafeContext}>  
+      <ReactReduxContext.Provider value={{store:ProxyfiedStore}} context={UnsafeContext}>  
           {UnsafeConsumers}
       </ReactReduxContext.Provider>
     </ApiErrorBoundary>
