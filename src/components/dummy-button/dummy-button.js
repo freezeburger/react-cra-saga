@@ -1,7 +1,7 @@
 import React from 'react';
 
 const DummyButton = ({children}) => (
-    <div>{children}</div>
+    <button>{children}</button>
 );
 DummyButton.defaultProps={
     color:'Blue',

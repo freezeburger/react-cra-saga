@@ -1,7 +1,7 @@
 import React from 'react';
 
 function DummyButton2 ({children}) {return(
-    <div>{children}</div>
+    <button>{children}</button>
 )}; 
 
 export default DummyButton2;

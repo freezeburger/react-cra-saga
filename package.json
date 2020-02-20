@@ -37,6 +37,7 @@
     ]
   },
   "devDependencies": {
+    "playroom": "^0.15.1",
     "react-styleguidist": "^10.6.2",
     "styleguidist-knobs": "^0.1.4"
   }
