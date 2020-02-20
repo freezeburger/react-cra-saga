@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { createStore } from 'redux';
-import { Provider } from 'react-redux';
+import { Provider , ReactReduxContext} from 'react-redux';
 import { connect } from 'react-redux';
 
 const API = 'https://www.reddit.com/r/reactjs/.json';
@@ -26,7 +26,6 @@ const apiReducer = (state = INITIAL_STATE, action) => {
   }
 };
 
-// Redux will make a first call to the apiReducer;
 const store = createStore(apiReducer);
 
 // Store Internal Logic
@@ -65,19 +64,46 @@ through the ApiProviderConnector Context
   );
 };
 
-// Moving on to Context
+// Adding Error Boundaries
 
-const ProxyfiedStore = new Proxy({store}, {
-  get(targert,key){
-    return () => {
-      console.log('🚫 Prohibited access to state')
-      throw Error('🚫 Not Allowed in Unsafe Context')
-    };
+class ApiErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
   }
-});
-const UnsafeContext = React.createContext();
 
-export const ApiProviderUnsafeContext = ({children :UnsafeConsumer}) => {
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  shouldComponentUpdate(){
+    return !this.state.hasError;
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.log(error);
+    console.log( errorInfo);
+  }
+
+  render() {
+    console.log('rendering', {state:this.state} );
+    if (this.state.hasError) {
+      return <h1>🚫 Not Allowed in Unsafe Context</h1>;
+    }
+    return this.props.children ;
+  }
+}
+
+// Moving on to Context
+const ProxyfiedStore = {
+  getState(){
+    console.log('🚫 Prohibited access to state');
+  },
+  subscribe(){},
+  dispatch(){}
+};
+
+const UnsafeContext = React.createContext();
+export const ApiProviderUnsafeContext = ({children :UnsafeConsumers}) => {
   console.log(
     '%c %s',
     'color:violet',
@@ -85,9 +111,12 @@ export const ApiProviderUnsafeContext = ({children :UnsafeConsumer}) => {
   Your belong to an Unsafe Context !!!
   `);
   return (
-    <Provider store={ProxyfiedStore} context={UnsafeContext}>
-      {UnsafeConsumer}
-    </Provider>
+    <ApiErrorBoundary>
+      {/*  Switch the store in Unsafe Context */}
+      <ReactReduxContext.Provider store={ProxyfiedStore} context={UnsafeContext}>  
+          {UnsafeConsumers}
+      </ReactReduxContext.Provider>
+    </ApiErrorBoundary>
   );
 };
 export default ApiProviderConnector;

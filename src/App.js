@@ -1,6 +1,5 @@
 import React from 'react';
 import ApiProviderConnector, {
-  ApiProviderConnectorWhithinContext, 
   ApiProviderUnsafeContext
 } from './StoredApplicationLogic';
 import { ReactReduxContext } from 'react-redux';
@@ -15,14 +14,11 @@ const HiJackingStoreComponent = () => {
   return (
     <ReactReduxContext.Consumer>
       {(contextValue = {}, { store } = contextValue) => {
-        console.log( contextValue );
         return <fieldset>{store.getState().time.currentFileTime}</fieldset>;
       }}
     </ReactReduxContext.Consumer>
   );
 };
-
-const ContextualFeature = (props) => <div>{JSON.stringify(props)}</div>;
 
 class App extends React.Component {
   // Explicit but not mandatory
@@ -48,7 +44,9 @@ class App extends React.Component {
         <Level1>
           <Level2>
             <Level3>
-              <Level4> <HiJackingStoreComponent /> </Level4>
+              <Level4>
+                <HiJackingStoreComponent />
+              </Level4>
             </Level3>
           </Level2>
         </Level1>
