@@ -1,10 +1,8 @@
 import React from 'react';
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { Provider, ReactReduxContext, connect } from 'react-redux';
 import { timeSagaMiddleware, timeSagaRun } from './StoreApplicationSaga';
 import { composeWithDevTools } from 'redux-devtools-extension';
-
-// const API = 'https://www.reddit.com/r/reactjs/.json';
 
 const INITIAL_STATE = {
   defaultValue: 'INITIAL_STATE',
@@ -37,34 +35,12 @@ const store = createStore(
   composeWithDevTools(applyMiddleware(timeSagaMiddleware))
 );
 
+// Store Internal Logic With Redux Saga
 timeSagaRun();
 store.dispatch({type:'INIT_SAGA_WORKERS'})
 
-// Moved To Saga
-// Store Internal Logic
-/* (() => {
-  setInterval(
-    async () => {
-      store.dispatch({type:'@@POLING_TIME_START'});
-      const data = await fetch(TIME).then(res => res.json());
-      store.dispatch({type:'@@POLING_TIME_END',data});
-    },
-    5000
-  );
-})(); */
-
 const ApiProviderConnector = ({ mapper = () => ({}), Component }) => {
   const ConnectedComponent = connect(mapper, null, null)(Component);
-
-  console.log(
-    '%c %s',
-    'color:blue',
-    `
-Your Application is now connected to the Store Context
-
-through the ApiProviderConnector Context
-`
-  );
   return (
     <Provider store={store}>
       <ConnectedComponent />
@@ -91,7 +67,7 @@ class ApiErrorBoundary extends React.Component {
   }
 }
 
-// Moving on to Context
+
 const ProxyfiedStore = {
   getState() {
     throw Error('🚫 Prohibited access to state 🚫');
@@ -103,16 +79,8 @@ const ProxyfiedStore = {
 const UnsafeContext = React.createContext();
 
 export const ApiProviderUnsafeContext = ({ children: UnsafeConsumers }) => {
-  console.log(
-    '%c %s',
-    'color:violet',
-    `
-  Your belong to an Unsafe Context !!!
-  `
-  );
   return (
     <ApiErrorBoundary>
-      {/*  Switch the store in Unsafe Context */}
       <ReactReduxContext.Provider
         value={{ store: ProxyfiedStore }}
         context={UnsafeContext}

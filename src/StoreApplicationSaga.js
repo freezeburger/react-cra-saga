@@ -11,7 +11,6 @@ const fetchTime = () => {
 
 /* Worker Function */
 function* updateTime() {
-
     while (true) {   
         yield put({type: '@@POLING_TIME_START' });
         const data = yield call(fetchTime);
@@ -22,11 +21,8 @@ function* updateTime() {
 }
 
 function* rootSagaWatcher() {
-
     yield take('INIT_SAGA_WORKERS');
-
     yield all([
-        // Other watchers (or Workers)...
         updateTime()
     ]);
 }
