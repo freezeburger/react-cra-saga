@@ -15,8 +15,9 @@
     "redux-saga": "^1.1.3"
   },
   "scripts": {
-    "git:prev":"git checkout HEAD^",
-    "git:next":"git checkout `git log --reverse --ancestry-path HEAD..master | head -n 1 | cut -d \\  -f 2`",
+    "gitstory:prev":"git checkout `git log --ancestry-path HEAD..master | head -n 1 | cut -d \\  -f 2`",
+    "gitstory:next":"git checkout `git log --reverse --ancestry-path HEAD..master | head -n 1 | cut -d \\  -f 2`",
+    "gitstory:start":"git checkout `git log --reverse | if read a commit ; then echo $commit ; fi`",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
